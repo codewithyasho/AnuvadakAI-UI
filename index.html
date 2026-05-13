@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anuvadak AI Video Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@300;400;600&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <div class="ambient">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="mesh"></div>
+    </div>
+
+    <div class="shell">
+        <header class="topbar">
+            <div class="brand">
+                <!-- <div class="logo">A</div> -->
+                <div>
+                    <p class="brand-name">Anuvadak AI</p>
+                    <p class="brand-sub">Video assistant and RAG chat</p>
+                </div>
+            </div>
+            <nav class="nav">
+                <a href="https://yashodeep2006-anuvadak-api.hf.space/docs" target="_blank" rel="noopener">Docs</a>
+                <a href="https://yashodeep2006-anuvadak-api.hf.space/summary/yt" target="_blank" rel="noopener">YT
+                    API</a>
+                <a href="https://yashodeep2006-anuvadak-api.hf.space/summary/local" target="_blank" rel="noopener">Local
+                    API</a>
+                <a href="https://yashodeep2006-anuvadak-api.hf.space/chat" target="_blank" rel="noopener">Chat API</a>
+            </nav>
+        </header>
+
+        <section class="hero">
+            <div class="hero-copy">
+                <p class="eyebrow">Analyze. Summarize. Ask anything.</p>
+                <h1>Turn long videos into sharp insights and instant answers.</h1>
+                <!-- <p class="lead">
+                    Drop a YouTube link or upload a file. Get a clean summary, action
+                    items, decisions, and a chat-ready transcript in minutes.
+                </p> -->
+                <div class="chip-row">
+                    <span class="chip">Groq Whisper</span>
+                    <span class="chip">Mistral Summaries</span>
+                    <span class="chip">RAG Chat</span>
+                </div>
+            </div>
+            <div class="hero-card">
+                <h2>3-step flow</h2>
+                <ol>
+                    <li>Pick YouTube or Local file.</li>
+                    <li>Run the analysis to get a session id.</li>
+                    <li>Ask questions in the chat panel.</li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>API Keys</h2>
+                <p>Used only in your browser. Nothing is stored on this page.</p>
+            </div>
+            <div class="grid two">
+                <div class="field">
+                    <label for="groqKey">GROQ_API_KEY</label>
+                    <div class="input-wrap">
+                        <input id="groqKey" type="password" placeholder="gsk_..." />
+                        <button class="ghost" data-toggle="groqKey" type="button">
+                            Show
+                        </button>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="mistralKey">MISTRAL_API_KEY</label>
+                    <div class="input-wrap">
+                        <input id="mistralKey" type="password" placeholder="mistral_..." />
+                        <button class="ghost" data-toggle="mistralKey" type="button">
+                            Show
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="tabs">
+                <button class="tab active" data-tab="yt" type="button">
+                    YouTube
+                </button>
+                <button class="tab" data-tab="local" type="button">Local</button>
+            </div>
+
+            <div class="tab-pane active" id="tab-yt">
+                <div class="grid two">
+                    <div class="field">
+                        <label for="ytUrl">YouTube URL</label>
+                        <input id="ytUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." />
+                    </div>
+                    <div class="field">
+                        <label for="ytMode">Video Language</label>
+                        <select id="ytMode">
+                            <option value="transcribe">English Video</option>
+                            <option value="translate">Hindi Video</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button id="runYt" class="primary" type="button">
+                        Analyze YouTube
+                    </button>
+                    <!-- <span class="hint">Uses /summary/yt endpoint</span> -->
+                </div>
+            </div>
+
+            <div class="tab-pane" id="tab-local">
+                <div class="grid two">
+                    <div class="field">
+                        <label for="localFile">Local media file</label>
+                        <input id="localFile" type="file" />
+                    </div>
+                    <div class="field">
+                        <label for="localMode">Video Language</label>
+                        <select id="localMode">
+                            <option value="transcribe">English Video</option>
+                            <option value="translate">Hindi Video</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button id="runLocal" class="primary" type="button">
+                        Analyze Local File
+                    </button>
+                    <!-- <span class="hint">Uses /summary/local endpoint</span> -->
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Summary Output</h2>
+                <p>Session id is required for chat. Copy it below.</p>
+            </div>
+            <div class="status" id="statusBox">Ready.</div>
+            <div class="session">
+                <div>
+                    <p class="label">Session ID</p>
+                    <p class="value" id="sessionId">--</p>
+                </div>
+                <button id="copySession" class="ghost" type="button">Copy</button>
+            </div>
+            <div class="results-row">
+                <article class="result-card">
+                    <h3>Executive Summary</h3>
+                    <div id="summaryText" class="result-body">No data yet.</div>
+                </article>
+                <article class="result-card">
+                    <h3>Action Items</h3>
+                    <div id="actionItems" class="result-body">No data yet.</div>
+                </article>
+                <article class="result-card">
+                    <h3>Key Decisions</h3>
+                    <div id="keyDecisions" class="result-body">No data yet.</div>
+                </article>
+                <article class="result-card">
+                    <h3>Open Questions</h3>
+                    <div id="openQuestions" class="result-body">No data yet.</div>
+                </article>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>RAG Chat</h2>
+                <p>Ask questions about the processed transcript.</p>
+            </div>
+            <div class="chat-box">
+                <div id="chatLog" class="chat-log">
+                    <div class="chat-bubble bot">
+                        Ask a question once you have a session id.
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <textarea id="chatQuestion" rows="3"
+                        placeholder="Ask about decisions, timelines, or summaries..."></textarea>
+                    <button id="askChat" class="primary" type="button">Ask</button>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>
+                Built for Anuvadak AI. Keys are sent directly to the API at
+                yashodeep2006-anuvadak-api.hf.space.
+            </p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
