@@ -5,17 +5,11 @@ const mistralKeyInput = document.getElementById("mistralKey");
 const statusBox = document.getElementById("statusBox");
 const sessionIdEl = document.getElementById("sessionId");
 const summaryEl = document.getElementById("summaryText");
-const actionItemsEl = document.getElementById("actionItems");
-const keyDecisionsEl = document.getElementById("keyDecisions");
-const openQuestionsEl = document.getElementById("openQuestions");
 const chatLog = document.getElementById("chatLog");
 
-const runYtBtn = document.getElementById("runYt");
 const runLocalBtn = document.getElementById("runLocal");
 const askChatBtn = document.getElementById("askChat");
 
-const ytUrlInput = document.getElementById("ytUrl");
-const ytModeSelect = document.getElementById("ytMode");
 const localFileInput = document.getElementById("localFile");
 const localModeSelect = document.getElementById("localMode");
 const chatQuestionInput = document.getElementById("chatQuestion");
@@ -37,7 +31,7 @@ function setLoading(button, isLoading, label) {
     button.textContent = isLoading ? "Working..." : label;
 }
 
-function ensureKeys() {
+function ensureSummaryKeys() {
     const groq = groqKeyInput.value.trim();
     const mistral = mistralKeyInput.value.trim();
     if (!groq || !mistral) {
@@ -47,13 +41,26 @@ function ensureKeys() {
     return { groq, mistral };
 }
 
+function ensureChatKey() {
+    const groq = groqKeyInput.value.trim();
+    if (!groq) {
+        setStatus("Please enter your Groq API key.", "error");
+        return null;
+    }
+    return groq;
+}
+
 function updateSummary(data) {
     currentSessionId = data.session_id || "";
     sessionIdEl.textContent = currentSessionId || "--";
-    summaryEl.textContent = data.summary || "";
-    actionItemsEl.textContent = data.action_items || "";
-    keyDecisionsEl.textContent = data.key_decisions || "";
-    openQuestionsEl.textContent = data.open_questions || "";
+    if (data.summary_status === "failed") {
+        summaryEl.textContent = data.summary_error
+            ? `Summarization failed: ${data.summary_error}`
+            : "Summary failed. Go to the chat section below 👇";
+        return;
+    }
+
+    summaryEl.textContent = data.summary || "Summary unavailable.";
 }
 
 function appendChat(role, text) {
@@ -73,48 +80,8 @@ async function handleJsonResponse(response) {
     return { detail: text };
 }
 
-runYtBtn.addEventListener("click", async () => {
-    const keys = ensureKeys();
-    if (!keys) return;
-
-    const url = ytUrlInput.value.trim();
-    if (!url) {
-        setStatus("Please enter a YouTube URL.", "error");
-        return;
-    }
-
-    setLoading(runYtBtn, true, "Analyze YouTube");
-    setStatus("Running YouTube analysis...");
-
-    try {
-        const response = await fetch(`${API_BASE}/summary/yt`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                url,
-                mode: ytModeSelect.value,
-                groq_api_key: keys.groq,
-                mistral_api_key: keys.mistral,
-            }),
-        });
-
-        const data = await handleJsonResponse(response);
-        if (!response.ok) {
-            setStatus(data.detail || "Request failed.", "error");
-            return;
-        }
-
-        updateSummary(data);
-        setStatus("Summary ready. Session id stored.", "success");
-    } catch (error) {
-        setStatus("Network error. Please try again.", "error");
-    } finally {
-        setLoading(runYtBtn, false, "Analyze YouTube");
-    }
-});
-
 runLocalBtn.addEventListener("click", async () => {
-    const keys = ensureKeys();
+    const keys = ensureSummaryKeys();
     if (!keys) return;
 
     const file = localFileInput.files[0];
@@ -129,11 +96,11 @@ runLocalBtn.addEventListener("click", async () => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("mode", localModeSelect.value);
-    formData.append("groq_api_key", keys.groq);
-    formData.append("mistral_api_key", keys.mistral);
+    formData.append("GROQ_API_KEY", keys.groq);
+    formData.append("MISTRAL_API_KEY", keys.mistral);
 
     try {
-        const response = await fetch(`${API_BASE}/summary/local`, {
+        const response = await fetch(`${API_BASE}/summary`, {
             method: "POST",
             body: formData,
         });
@@ -145,6 +112,10 @@ runLocalBtn.addEventListener("click", async () => {
         }
 
         updateSummary(data);
+        if (data.summary_status === "failed") {
+            setStatus("Summary failed. Go to the chat section below 👇", "error");
+            return;
+        }
         setStatus("Summary ready. Session id stored.", "success");
     } catch (error) {
         setStatus("Network error. Please try again.", "error");
@@ -154,8 +125,8 @@ runLocalBtn.addEventListener("click", async () => {
 });
 
 askChatBtn.addEventListener("click", async () => {
-    const keys = ensureKeys();
-    if (!keys) return;
+    const groqKey = ensureChatKey();
+    if (!groqKey) return;
 
     const question = chatQuestionInput.value.trim();
     if (!question) {
@@ -177,9 +148,8 @@ askChatBtn.addEventListener("click", async () => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 session_id: currentSessionId,
-                question,
-                groq_api_key: keys.groq,
-                mistral_api_key: keys.mistral,
+                query: question,
+                GROQ_API_KEY: groqKey,
             }),
         });
 
@@ -219,20 +189,5 @@ document.querySelectorAll("[data-toggle]").forEach((button) => {
         const isPassword = input.type === "password";
         input.type = isPassword ? "text" : "password";
         button.textContent = isPassword ? "Hide" : "Show";
-    });
-});
-
-document.querySelectorAll(".tab").forEach((tab) => {
-    tab.addEventListener("click", () => {
-        document.querySelectorAll(".tab").forEach((item) => {
-            item.classList.remove("active");
-        });
-        document.querySelectorAll(".tab-pane").forEach((pane) => {
-            pane.classList.remove("active");
-        });
-        tab.classList.add("active");
-        const target = tab.getAttribute("data-tab");
-        const panel = document.getElementById(`tab-${target}`);
-        if (panel) panel.classList.add("active");
     });
 });

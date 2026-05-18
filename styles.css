@@ -420,17 +420,12 @@ textarea:focus {
 
 .results-row {
     display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(240px, 1fr);
+    grid-template-columns: 1fr;
     gap: 16px;
-    overflow-x: auto;
-    padding-bottom: 8px;
-    scroll-snap-type: x mandatory;
 }
 
 .results-row .result-card {
     min-height: 220px;
-    scroll-snap-align: start;
 }
 
 .result-card h3 {
@@ -496,11 +491,6 @@ textarea:focus {
 
     .chat-input {
         grid-template-columns: 1fr;
-    }
-
-    .results-row {
-        grid-auto-columns: minmax(85vw, 1fr);
-        scroll-padding-left: 8px;
     }
 
     .results-row .result-card {

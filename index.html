@@ -32,9 +32,7 @@
             </div>
             <nav class="nav">
                 <a href="https://yashodeep2006-anuvadak-api.hf.space/docs" target="_blank" rel="noopener">Docs</a>
-                <a href="https://yashodeep2006-anuvadak-api.hf.space/summary/yt" target="_blank" rel="noopener">YT
-                    API</a>
-                <a href="https://yashodeep2006-anuvadak-api.hf.space/summary/local" target="_blank" rel="noopener">Local
+                <a href="https://yashodeep2006-anuvadak-api.hf.space/summary" target="_blank" rel="noopener">Summary
                     API</a>
                 <a href="https://yashodeep2006-anuvadak-api.hf.space/chat" target="_blank" rel="noopener">Chat API</a>
             </nav>
@@ -48,20 +46,20 @@
                     Drop a YouTube link or upload a file. Get a clean summary, action
                     items, decisions, and a chat-ready transcript in minutes.
                 </p> -->
-                <div class="chip-row">
+                <!-- <div class="chip-row">
                     <span class="chip">Groq Whisper</span>
                     <span class="chip">Mistral Summaries</span>
                     <span class="chip">RAG Chat</span>
-                </div>
+                </div> -->
             </div>
-            <div class="hero-card">
+            <!-- <div class="hero-card">
                 <h2>3-step flow</h2>
                 <ol>
-                    <li>Pick YouTube or Local file.</li>
+                    <li>Upload a local audio or video file.</li>
                     <li>Run the analysis to get a session id.</li>
                     <li>Ask questions in the chat panel.</li>
                 </ol>
-            </div>
+            </div> -->
         </section>
 
         <section class="panel">
@@ -92,55 +90,23 @@
         </section>
 
         <section class="panel">
-            <div class="tabs">
-                <button class="tab active" data-tab="yt" type="button">
-                    YouTube
+            <div class="grid two">
+                <div class="field">
+                    <label for="localFile">Local media file</label>
+                    <input id="localFile" type="file" />
+                </div>
+                <div class="field">
+                    <label for="localMode">Video Language</label>
+                    <select id="localMode">
+                        <option value="transcribe">English Video</option>
+                        <option value="translate">Hindi Video</option>
+                    </select>
+                </div>
+            </div>
+            <div class="actions">
+                <button id="runLocal" class="primary" type="button">
+                    Analyze Local File
                 </button>
-                <button class="tab" data-tab="local" type="button">Local</button>
-            </div>
-
-            <div class="tab-pane active" id="tab-yt">
-                <div class="grid two">
-                    <div class="field">
-                        <label for="ytUrl">YouTube URL</label>
-                        <input id="ytUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." />
-                    </div>
-                    <div class="field">
-                        <label for="ytMode">Video Language</label>
-                        <select id="ytMode">
-                            <option value="transcribe">English Video</option>
-                            <option value="translate">Hindi Video</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="actions">
-                    <button id="runYt" class="primary" type="button">
-                        Analyze YouTube
-                    </button>
-                    <!-- <span class="hint">Uses /summary/yt endpoint</span> -->
-                </div>
-            </div>
-
-            <div class="tab-pane" id="tab-local">
-                <div class="grid two">
-                    <div class="field">
-                        <label for="localFile">Local media file</label>
-                        <input id="localFile" type="file" />
-                    </div>
-                    <div class="field">
-                        <label for="localMode">Video Language</label>
-                        <select id="localMode">
-                            <option value="transcribe">English Video</option>
-                            <option value="translate">Hindi Video</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="actions">
-                    <button id="runLocal" class="primary" type="button">
-                        Analyze Local File
-                    </button>
-                    <!-- <span class="hint">Uses /summary/local endpoint</span> -->
-                </div>
             </div>
         </section>
 
@@ -162,18 +128,7 @@
                     <h3>Executive Summary</h3>
                     <div id="summaryText" class="result-body">No data yet.</div>
                 </article>
-                <article class="result-card">
-                    <h3>Action Items</h3>
-                    <div id="actionItems" class="result-body">No data yet.</div>
-                </article>
-                <article class="result-card">
-                    <h3>Key Decisions</h3>
-                    <div id="keyDecisions" class="result-body">No data yet.</div>
-                </article>
-                <article class="result-card">
-                    <h3>Open Questions</h3>
-                    <div id="openQuestions" class="result-body">No data yet.</div>
-                </article>
+
             </div>
         </section>
 
